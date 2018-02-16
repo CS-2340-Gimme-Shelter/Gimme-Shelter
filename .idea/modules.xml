@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Gimme-Shelter.iml" filepath="$PROJECT_DIR$/Gimme-Shelter.iml" />
-      <module fileurl="file://C:\Users\crsch\Documents\Schoolwork\CS2340\Gimme-Shelter\M4.iml" filepath="C:\Users\crsch\Documents\Schoolwork\CS2340\Gimme-Shelter\M4.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\crsch\Documents\Schoolwork\CS2340\Gimme-Shelter\app\app.iml" filepath="C:\Users\crsch\Documents\Schoolwork\CS2340\Gimme-Shelter\app\app.iml" />
     </modules>
   </component>
 </project>
