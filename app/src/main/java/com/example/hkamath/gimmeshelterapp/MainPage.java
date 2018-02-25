@@ -9,7 +9,8 @@ import android.widget.Button;
 
 public class MainPage extends AppCompatActivity {
 
-    Button button;
+    private Button loginButton;
+    private Button registerButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -17,16 +18,30 @@ public class MainPage extends AppCompatActivity {
         // Get the view from activity_main.xml
         setContentView(R.layout.activity_main_page);
 
-        // Locate the button in activity_main.xml
-        button = (Button) findViewById(R.id.login_button);
+        // Locate the login button in activity_main.xml
+        loginButton = (Button) findViewById(R.id.login_button);
 
-        // Capture button clicks
-        button.setOnClickListener(new OnClickListener() {
+        // Capture login button clicks
+        loginButton.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
 
                 // Start NewActivity.class
                 Intent myIntent = new Intent(MainPage.this,
                         LoginScreen.class);
+                startActivity(myIntent);
+            }
+        });
+
+        // Locate the register button in activity_main.xml
+        registerButton = (Button) findViewById(R.id.register_button);
+
+        // Capture register button clicks
+        registerButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View arg0) {
+
+                // Start NewActivity.class
+                Intent myIntent = new Intent(MainPage.this,
+                        RegistrationScreen.class);
                 startActivity(myIntent);
             }
         });
