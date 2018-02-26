@@ -1,5 +1,7 @@
 package com.example.hkamath.gimmeshelterapp.model;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.Date;
 
 /**
@@ -7,7 +9,7 @@ import java.util.Date;
  */
 
 public class HomelessUser extends User {
-    public HomelessUser(String firstName, String lastName, String username, String password, Gender gender, Date birthDate) {
-        super(firstName, lastName, username, password, gender, birthDate, false);
+    public HomelessUser(String firstName, String lastName, String username, String password, Gender gender, Date birthDate, FirebaseUser fuser) {
+        super(firstName, lastName, username, password, gender, birthDate, false, fuser);
     }
 }

@@ -131,7 +131,7 @@ public class RegistrationScreen extends AppCompatActivity implements UserLoginCa
         mBDateView.setError(null);
 
         // Store values at the time of the login attempt.
-        String username = mUserNameView.getText().toString();
+        String email = mUserNameView.getText().toString();
         String password = mPasswordView.getText().toString();
         String firstName = mFirstNameView.getText().toString();
         String lastName = mLastNameView.getText().toString();
@@ -160,13 +160,13 @@ public class RegistrationScreen extends AppCompatActivity implements UserLoginCa
             cancel = true;
         }
 
-        // Check for a valid username.
-        if (TextUtils.isEmpty(username)) {
+        // Check for a valid email.
+        if (TextUtils.isEmpty(email)) {
             mUserNameView.setError(getString(R.string.error_field_required));
             focusView = mUserNameView;
             cancel = true;
-        } else if (!User.isUsernameValid(username)) {
-            mUserNameView.setError(getString(R.string.error_invalid_username));
+        } else if (!User.isEmailValid(email)) {
+            mUserNameView.setError(getString(R.string.error_invalid_email));
             focusView = mUserNameView;
             cancel = true;
         }
@@ -196,9 +196,9 @@ public class RegistrationScreen extends AppCompatActivity implements UserLoginCa
             Calendar c = Calendar.getInstance();
             c.set(selectedBirthYear, selectedBirthMonth, selectedBirthDay, 0, 0);
 
-            mAuthTask = new APIUtil.UserRegistratonTask(firstName, lastName, username, password,
+            mAuthTask = new APIUtil.UserRegistratonTask(firstName, lastName, email, password,
                     gender, c.getTime(), admin, this);
-            mAuthTask.execute((Void) null);
+            mAuthTask.register();
         }
     }
 
@@ -239,7 +239,7 @@ public class RegistrationScreen extends AppCompatActivity implements UserLoginCa
     }
 
     @Override
-    public void onPostExecute(Boolean success) {
+    public void onPostExecute(Boolean success, String error) {
         mAuthTask = null;
 
         if (success.booleanValue()) {
@@ -247,15 +247,14 @@ public class RegistrationScreen extends AppCompatActivity implements UserLoginCa
                     HomePage.class);
             startActivity(myIntent);
         } else {
-            mUserNameView.setError("Username already in use!");
+            mUserNameView.setError(error);
             mUserNameView.requestFocus();
             showProgress(false);
         }
     }
 
     @Override
-    public void onCancelled() {
-        mAuthTask = null;
-        showProgress(false);
+    public void onPostExecute(Boolean success, int id) {
+        onPostExecute(success, getString(id));
     }
 }

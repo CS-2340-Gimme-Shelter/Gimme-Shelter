@@ -4,7 +4,6 @@
     <!-- Strings related to login and registration-->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="prompt_username">Username</string>
     <string name="prompt_firstName">First Name</string>
     <string name="prompt_lastName">Last Name</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -24,5 +23,7 @@
     <string name="bdate_label">Birth Date</string>
     <string name="prompt_bdate">Select Date</string>
     <string name="prompt_admin">Admin</string>
-    <string name="error_invalid_username">Error: username invalid.</string>
+    <string name="error_invalid_username">Error: crschriever invalid.</string>
+    <string name="email_in_use">Error: email already in use</string>
+    <string name="error_email_password_not_found">Email, password combination not found</string>
 </resources>

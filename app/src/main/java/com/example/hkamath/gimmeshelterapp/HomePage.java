@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.hkamath.gimmeshelterapp.model.User;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomePage extends AppCompatActivity {
 
@@ -25,6 +26,8 @@ public class HomePage extends AppCompatActivity {
         // Capture button clicks
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
+
+                FirebaseAuth.getInstance().signOut();
 
                 // Start NewActivity.class
                 Intent myIntent = new Intent(HomePage.this,

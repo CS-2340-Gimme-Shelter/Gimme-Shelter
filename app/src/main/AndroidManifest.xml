@@ -20,5 +20,6 @@
         <activity android:name=".LoginScreen" />
         <activity android:name=".RegistrationScreen" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

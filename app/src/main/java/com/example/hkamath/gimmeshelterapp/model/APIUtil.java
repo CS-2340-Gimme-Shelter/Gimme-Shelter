@@ -1,11 +1,20 @@
 package com.example.hkamath.gimmeshelterapp.model;
 
-import android.content.Intent;
-import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
 
-import com.example.hkamath.gimmeshelterapp.HomePage;
-import com.example.hkamath.gimmeshelterapp.LoginScreen;
 import com.example.hkamath.gimmeshelterapp.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 
@@ -15,15 +24,18 @@ import java.util.Date;
 
 public class APIUtil {
 
+    private static FirebaseAuth auth = FirebaseAuth.getInstance();
+    private static FirebaseDatabase database = FirebaseDatabase.getInstance();
+
     /**
      * Represents an asynchronous registration task used to authenticate
      * the user.
      */
-    public static class UserRegistratonTask extends AsyncTask<Void, Void, Boolean> {
+    public static class UserRegistratonTask {
 
         private String firstName;
         private String lastName;
-        private String username;
+        private String email;
         private String password;
         private Gender gender;
         private Date birthDate;
@@ -31,10 +43,10 @@ public class APIUtil {
 
         private UserLoginCallback callback;
 
-        public UserRegistratonTask(String firstName, String lastName, String username, String password, Gender gender, Date birthDate, boolean admin, UserLoginCallback callback) {
+        public UserRegistratonTask(String firstName, String lastName, String email, String password, Gender gender, Date birthDate, boolean admin, UserLoginCallback callback) {
             this.firstName = firstName;
             this.lastName = lastName;
-            this.username = username;
+            this.email = email;
             this.password = password;
             this.gender = gender;
             this.birthDate = birthDate;
@@ -42,42 +54,30 @@ public class APIUtil {
             this.callback = callback;
         }
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+        public void register() {
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        Log.d("Auth", (task.getResult().getUser() == null) + "");
+                        FirebaseUser fuser = task.getResult().getUser();
+                        DatabaseReference myRef = database.getReference(fuser.getUid());
+                        User regUser;
+                        if (admin) {
+                            regUser = new AdminUser(firstName, lastName, email, password, gender, birthDate, fuser);
+                        } else {
+                            regUser = new HomelessUser(firstName, lastName, email, password, gender, birthDate, fuser);
+                        }
+                        myRef.setValue(regUser);
+                        User.loginAs(regUser);
+                        callback.onPostExecute(true, null);
+                    } else {
+                        callback.onPostExecute(false, R.string.email_in_use);
+                    }
 
-            User regUser;
-
-            if (admin) {
-                 regUser = new AdminUser(firstName, lastName, username, password, gender, birthDate);
-            } else {
-                regUser = new HomelessUser(firstName, lastName, username, password, gender, birthDate);
-            }
-
-            if (User.userPresent(regUser)) {
-                return false;
-            } else {
-                User.addRegisteredUser(regUser);
-                User.loginAs(regUser);
-                return true;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            callback.onPostExecute(success);
-        }
-
-        @Override
-        protected void onCancelled() {
-            callback.onCancelled();
+                }
+            });
         }
     }
 
@@ -85,48 +85,58 @@ public class APIUtil {
      * Represents an asynchronous login task used to authenticate
      * the user.
      */
-    public static class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public static class UserLoginTask {
 
-        private final String mUsername;
+        private final String mEmail;
         private final String mPassword;
 
         private UserLoginCallback callback;
 
-        public UserLoginTask(String username, String password, UserLoginCallback callback) {
-            mUsername = username;
+        public UserLoginTask(String email, String password, UserLoginCallback callback) {
+            this.mEmail = email;
             mPassword = password;
             this.callback = callback;
         }
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+        public void signIn() {
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+            auth.signInWithEmailAndPassword(mEmail, mPassword)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                FirebaseUser fuser = task.getResult().getUser();
+                                User user = new HomelessUser(null, null, null, null, null, null, fuser);
 
-            User user = User.findUser(mUsername, mPassword);
-            if (user == null) {
-                return false;
-            } else {
-                User.loginAs(user);
-                return true;
-            }
+                                DatabaseReference myRef = database.getReference(fuser.getUid());
+                                myRef.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        // This method is called once with the initial value and again
+                                        // whenever data at this location is updated.
+                                        User user = dataSnapshot.getValue(User.class);
+                                        User.loginAs(user);
+                                        callback.onPostExecute(true, null);
+                                        Log.d("Auth", user.toString());
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError error) {
+                                        // Failed to read value
+                                        auth.signOut();
+                                        callback.onPostExecute(false, error.getMessage());
+                                    }
+                                });
+
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                callback.onPostExecute(false, R.string.error_email_password_not_found);
+                            }
+
+                        }
+                    });
         }
 
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            callback.onPostExecute(success);
-
-        }
-
-        @Override
-        protected void onCancelled() {
-            callback.onCancelled();
-        }
     }
 }

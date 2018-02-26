@@ -1,5 +1,9 @@
 package com.example.hkamath.gimmeshelterapp.model;
 
+import android.util.Patterns;
+
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,9 +12,8 @@ import java.util.List;
  * Created by crsch on 2/25/2018.
  */
 
-public abstract class User {
+public class User {
 
-    private static List<User> userList = new ArrayList<User>();
     private static User currentUser;
 
     private String firstName;
@@ -20,8 +23,13 @@ public abstract class User {
     private Gender gender;
     private Date birthDate;
     private boolean admin;
+    private FirebaseUser fuser;
 
-    public User(String firstName, String lastName, String username, String password, Gender gender, Date birthDate, boolean admin) {
+    public User() {
+
+    }
+
+    public User(String firstName, String lastName, String username, String password, Gender gender, Date birthDate, boolean admin, FirebaseUser fuser) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -29,6 +37,11 @@ public abstract class User {
         this.gender = gender;
         this.birthDate = birthDate;
         this.admin = admin;
+        this.fuser = fuser;
+    }
+
+    public FirebaseUser getFirebaseUser() {
+        return fuser;
     }
 
     public boolean isAdmin() {
@@ -59,24 +72,6 @@ public abstract class User {
         return birthDate;
     }
 
-    public static boolean userPresent(User u) {
-        return userList.contains(u);
-    }
-
-    public static User findUser(String username, String password) {
-        for (User u: userList) {
-            if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
-                return u;
-            }
-        }
-
-        return null;
-    }
-
-    public static void addRegisteredUser(User u) {
-        userList.add(u);
-    }
-
     public static void loginAs(User u) {
         currentUser = u;
     }
@@ -89,13 +84,13 @@ public abstract class User {
         return currentUser;
     }
 
-    public static boolean isUsernameValid(String username) {
-        return username.length() > 2;
+    public static boolean isEmailValid(String email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     public static boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 5;
     }
 
     @Override
@@ -111,5 +106,18 @@ public abstract class User {
     @Override
     public int hashCode() {
         return username != null ? username.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", gender=" + gender +
+                ", birthDate=" + birthDate +
+                ", admin=" + admin +
+                '}';
     }
 }

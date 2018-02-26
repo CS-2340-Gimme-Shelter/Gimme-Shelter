@@ -6,8 +6,6 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
-import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -25,7 +23,7 @@ import com.example.hkamath.gimmeshelterapp.model.User;
 import com.example.hkamath.gimmeshelterapp.model.UserLoginCallback;
 
 /**
- * A login screen that offers login via username/password.
+ * A login screen that offers login via email/password.
  */
 public class LoginScreen extends AppCompatActivity implements UserLoginCallback {
 
@@ -40,7 +38,7 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
     private APIUtil.UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mUserNameView;
+    private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
@@ -50,7 +48,7 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_screen);
         // Set up the login form.
-        mUserNameView = (AutoCompleteTextView) findViewById(R.id.username);
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -85,7 +83,7 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
 
     /**
      * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid username, missing fields, etc.), the
+     * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
@@ -94,11 +92,11 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
         }
 
         // Reset errors.
-        mUserNameView.setError(null);
+        mEmailView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String username = mUserNameView.getText().toString();
+        String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -111,14 +109,14 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
             cancel = true;
         }
 
-        // Check for a valid username address.
-        if (TextUtils.isEmpty(username)) {
-            mUserNameView.setError(getString(R.string.error_field_required));
-            focusView = mUserNameView;
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.error_field_required));
+            focusView = mEmailView;
             cancel = true;
-        } else if (!User.isUsernameValid(username)) {
-            mUserNameView.setError("This username is invalid!");
-            focusView = mUserNameView;
+        } else if (!User.isEmailValid(email)) {
+            mEmailView.setError(getString(R.string.error_invalid_email));
+            focusView = mEmailView;
             cancel = true;
         }
 
@@ -130,8 +128,8 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new APIUtil.UserLoginTask(username, password, this);
-            mAuthTask.execute((Void) null);
+            mAuthTask = new APIUtil.UserLoginTask(email, password, this);
+            mAuthTask.signIn();
         }
     }
 
@@ -172,7 +170,7 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
     }
 
     @Override
-    public void onPostExecute(Boolean success) {
+    public void onPostExecute(Boolean success, String error) {
         mAuthTask = null;
 
         if (success.booleanValue()) {
@@ -180,16 +178,16 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
                     HomePage.class);
             startActivity(myIntent);
         } else {
-            mUserNameView.setError("Username password combination not found!");
-            mUserNameView.requestFocus();
+            mEmailView.setError(error);
+            mEmailView.requestFocus();
             showProgress(false);
         }
     }
 
     @Override
-    public void onCancelled() {
-        mAuthTask = null;
-        showProgress(false);
+    public void onPostExecute(Boolean success, int id) {
+        onPostExecute(success, getString(id));
     }
+
 }
 
