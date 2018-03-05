@@ -27,4 +27,16 @@
     <string name="email_in_use">Error: email already in use</string>
     <string name="error_email_password_not_found">Email, password combination not found</string>
     <string name="shelters_didnt_load">Shelters failed to load</string>
+    <string name="shelter_list_button">View Shelters</string>
+    <string name="logout_button">Logout</string>
+    <string name="shelter_map_button">Nearby Shelters</string>
+    <string name="default_shelter_name">No name</string>
+    <string name="default_shelter_constraint">No constraints</string>
+    <string name="default_shelter_address">No address given</string>
+    <string name="shelter_item_restiction_label">Restrictions:</string>
+    <string name="shelter_item_address_label">Address:</string>
+    <string name="shelter_detail_capacity_label">Capacity:</string>
+    <string name="shelter_detail_phone_number_label">Phone:</string>
+    <string name="shelter_detail_restrictions_label">Restrictions:</string>
+    <string name="shelter_detail_special_notes_label">Notes:</string>
 </resources>

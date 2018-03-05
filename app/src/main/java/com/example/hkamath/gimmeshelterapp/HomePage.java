@@ -18,7 +18,9 @@ import java.util.List;
 
 public class HomePage extends AppCompatActivity implements ShelterFetchCallback {
 
-    Button button;
+    private Button logoutButton;
+    private Button shelterListButton;
+    private Button mapButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,22 +29,42 @@ public class HomePage extends AppCompatActivity implements ShelterFetchCallback 
 
         setTitle("Hello " + User.getCurrentUser().getFirstName());
 
-        // Locate the button in activity_main.xml
-        button = (Button) findViewById(R.id.logout_button);
+        // Locate the buttons in activity_main.xml
+        logoutButton = (Button) findViewById(R.id.logout_button);
+        shelterListButton = (Button) findViewById(R.id.shelter_list_button);
+        mapButton = (Button) findViewById(R.id.shelter_map_button);
 
         APIUtil.GrabSheltersTask sheltersTask = new APIUtil.GrabSheltersTask();
         sheltersTask.fetch(this);
 
         // Capture button clicks
-        button.setOnClickListener(new View.OnClickListener() {
+        logoutButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
 
                 FirebaseAuth.getInstance().signOut();
 
-                // Start NewActivity.class
+                // Go back to login screen
                 Intent myIntent = new Intent(HomePage.this,
                         MainPage.class);
                 startActivity(myIntent);
+            }
+        });
+
+        shelterListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Switch to List View
+                Intent myIntent = new Intent(HomePage.this,
+                        ShelterList.class);
+                startActivity(myIntent);
+            }
+        });
+
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Switch to List View
+                Toast.makeText(HomePage.this, "Not implemented yet.", Toast.LENGTH_SHORT).show();
             }
         });
     }

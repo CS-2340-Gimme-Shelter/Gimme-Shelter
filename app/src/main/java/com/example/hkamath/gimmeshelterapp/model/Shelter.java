@@ -1,10 +1,16 @@
 package com.example.hkamath.gimmeshelterapp.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by crsch on 3/5/2018.
  */
 
 public class Shelter {
+
+    private static List<Shelter> shelters = new ArrayList<Shelter>();
+
     private String address;
     private long capacity;
     private double latitude;
@@ -16,6 +22,7 @@ public class Shelter {
     private long uniqueKey;
 
     public Shelter(String address, long capacity, double latitude, double longitude, String phoneNumber, String restrictions, String shelterName, String specialNotes, long uniqueKey) {
+        this();
         this.address = address;
         this.capacity = capacity;
         this.latitude = latitude;
@@ -28,6 +35,11 @@ public class Shelter {
     }
 
     public Shelter() {
+        shelters.add(this);
+    }
+
+    public static List<Shelter> getShelters() {
+        return shelters;
     }
 
     public String getAddress() {

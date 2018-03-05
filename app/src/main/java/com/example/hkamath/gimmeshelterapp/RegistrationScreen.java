@@ -248,7 +248,10 @@ public class RegistrationScreen extends AppCompatActivity implements UserLoginCa
         if (success.booleanValue()) {
             Intent myIntent = new Intent(this,
                     HomePage.class);
+            // Can't hit back button and come here
+            myIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(myIntent);
+            finish();
         } else {
             mUserNameView.setError(error);
             mUserNameView.requestFocus();
