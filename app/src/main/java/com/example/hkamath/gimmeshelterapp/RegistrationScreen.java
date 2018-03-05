@@ -23,10 +23,13 @@ import android.widget.TextView;
 
 import com.example.hkamath.gimmeshelterapp.model.APIUtil;
 import com.example.hkamath.gimmeshelterapp.model.Gender;
+import com.example.hkamath.gimmeshelterapp.model.Shelter;
+import com.example.hkamath.gimmeshelterapp.model.ShelterFetchCallback;
 import com.example.hkamath.gimmeshelterapp.model.User;
 import com.example.hkamath.gimmeshelterapp.model.UserLoginCallback;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class RegistrationScreen extends AppCompatActivity implements UserLoginCallback {
 

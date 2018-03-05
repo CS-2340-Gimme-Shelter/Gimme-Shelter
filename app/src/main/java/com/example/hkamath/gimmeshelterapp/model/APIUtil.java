@@ -16,7 +16,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by crsch on 2/25/2018.
@@ -26,6 +28,31 @@ public class APIUtil {
 
     private static FirebaseAuth auth = FirebaseAuth.getInstance();
     private static FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    public static class GrabSheltersTask {
+        public static void fetch(final ShelterFetchCallback callback) {
+            DatabaseReference myRef = database.getReference("Shelter");
+            Log.d("Shelters", "Fetching shelters");
+
+            myRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    List<Shelter> shelters = new ArrayList<Shelter>();
+                    for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                        Shelter shelter = snapshot.getValue(Shelter.class);
+                        shelters.add(shelter);
+                    }
+
+                    callback.sheltersFetched(shelters);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    callback.onFail();
+                }
+            });
+        }
+    }
 
     /**
      * Represents an asynchronous registration task used to authenticate
@@ -62,7 +89,8 @@ public class APIUtil {
                     if (task.isSuccessful()) {
                         Log.d("Auth", (task.getResult().getUser() == null) + "");
                         FirebaseUser fuser = task.getResult().getUser();
-                        DatabaseReference myRef = database.getReference(fuser.getUid());
+                        DatabaseReference myRef = database.getReference("User").child(fuser.getUid());
+
                         User regUser;
                         if (admin) {
                             regUser = new AdminUser(firstName, lastName, email, password, gender, birthDate, fuser);
@@ -109,7 +137,7 @@ public class APIUtil {
                                 FirebaseUser fuser = task.getResult().getUser();
                                 User user = new HomelessUser(null, null, null, null, null, null, fuser);
 
-                                DatabaseReference myRef = database.getReference(fuser.getUid());
+                                DatabaseReference myRef = database.getReference("User").child(fuser.getUid());
                                 myRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {

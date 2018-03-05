@@ -26,4 +26,5 @@
     <string name="error_invalid_username">Error: crschriever invalid.</string>
     <string name="email_in_use">Error: email already in use</string>
     <string name="error_email_password_not_found">Email, password combination not found</string>
+    <string name="shelters_didnt_load">Shelters failed to load</string>
 </resources>
