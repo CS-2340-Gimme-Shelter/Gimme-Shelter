@@ -38,7 +38,7 @@ public class ShelterList extends AppCompatActivity {
                 TextView address = (TextView) convertView.findViewById(R.id.shelter_list_item_address);
                 // Populate the data into the template view using the data object
                 name.setText(shelter.getShelterName());
-                restriction.setText(getString(R.string.shelter_item_restiction_label) + " " + shelter.getRestrictions());
+                restriction.setText(getString(R.string.shelter_item_restiction_label) + " " + shelter.getRestrictionsString());
                 address.setText(getString(R.string.shelter_item_address_label) + " " + shelter.getAddress());
 
                 // Return the completed view to render on screen

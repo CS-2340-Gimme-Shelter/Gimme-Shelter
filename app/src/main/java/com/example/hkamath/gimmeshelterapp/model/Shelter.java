@@ -16,12 +16,13 @@ public class Shelter {
     private double latitude;
     private double longitude;
     private String phoneNumber;
-    private String restrictions;
     private String shelterName;
     private String specialNotes;
     private long uniqueKey;
+    private ShelterGender gender;
+    private List<ShelterRestriction> restrictions;
 
-    public Shelter(String address, long capacity, double latitude, double longitude, String phoneNumber, String restrictions, String shelterName, String specialNotes, long uniqueKey) {
+    public Shelter(String address, long capacity, double latitude, double longitude, String phoneNumber, List<ShelterRestriction> restrictions, String shelterName, String specialNotes, long uniqueKey, ShelterGender gender) {
         this();
         this.address = address;
         this.capacity = capacity;
@@ -32,6 +33,7 @@ public class Shelter {
         this.shelterName = shelterName;
         this.specialNotes = specialNotes;
         this.uniqueKey = uniqueKey;
+        this.gender = gender;
     }
 
     public Shelter() {
@@ -82,11 +84,11 @@ public class Shelter {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getRestrictions() {
+    public List<ShelterRestriction> getRestrictions() {
         return restrictions;
     }
 
-    public void setRestrictions(String restrictions) {
+    public void setRestrictions(List<ShelterRestriction> restrictions) {
         this.restrictions = restrictions;
     }
 
@@ -114,6 +116,14 @@ public class Shelter {
         this.uniqueKey = uniqueKey;
     }
 
+    public ShelterGender getGender() {
+        return gender;
+    }
+
+    public void setGender(ShelterGender gender) {
+        this.gender = gender;
+    }
+
     @Override
     public String toString() {
         return "Shelter{" +
@@ -127,5 +137,9 @@ public class Shelter {
                 ", specialNotes='" + specialNotes + '\'' +
                 ", uniqueKey=" + uniqueKey +
                 '}';
+    }
+
+    public String getRestrictionsString() {
+        return "Gender: " + gender.toString() + ", Other: " + restrictions.toString();
     }
 }

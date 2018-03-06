@@ -6,6 +6,8 @@ import android.widget.TextView;
 
 import com.example.hkamath.gimmeshelterapp.model.Shelter;
 
+import java.util.Arrays;
+
 public class ShelterDetails extends AppCompatActivity {
 
     private TextView nameField;
@@ -33,7 +35,7 @@ public class ShelterDetails extends AppCompatActivity {
         nameField.setText(shelter.getShelterName());
         capacityField.setText(shelter.getCapacity() + "");
         phoneField.setText(shelter.getPhoneNumber());
-        restrictionField.setText(shelter.getRestrictions());
+        restrictionField.setText(shelter.getRestrictionsString());
         notesField.setText(shelter.getSpecialNotes());
         addressFields.setText(shelter.getAddress()
         );
