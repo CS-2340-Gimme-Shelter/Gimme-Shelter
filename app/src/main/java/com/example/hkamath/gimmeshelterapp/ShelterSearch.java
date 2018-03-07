@@ -33,6 +33,8 @@ public class ShelterSearch extends AppCompatActivity {
     private TextView genderView;
     private Button search;
 
+    private TextView nameInput;
+
     private List<ShelterRestriction> restrictions = new ArrayList<ShelterRestriction>();
     private ShelterRestriction currentRestriction;
     private ShelterGender currentGender = ShelterGender.UNRESTRICTED;
@@ -43,6 +45,7 @@ public class ShelterSearch extends AppCompatActivity {
         setContentView(R.layout.activity_shelter_search);
         setTitle(R.string.search_title);
 
+        nameInput = findViewById(R.id.search_name);
         genderSpinner = findViewById(R.id.search_gender_spinner);
         restrictionSpinner = findViewById(R.id.search_restriction_spinner);
         restrictionButton = findViewById(R.id.search_add_restriction_button);
@@ -114,8 +117,7 @@ public class ShelterSearch extends AppCompatActivity {
                 Intent intent = new Intent(ShelterSearch.this, ShelterList.class);
                 ShelterRestriction[] restricts = new ShelterRestriction[0];
                 intent.putExtra("shelters",
-                        ShelterHandler.getOrderedShelterList(currentGender, restrictions.toArray(restricts)));
-                Log.d("Shelters", Arrays.toString( ShelterHandler.getOrderedShelterList(currentGender, restrictions.toArray(restricts))));
+                        ShelterHandler.getOrderedShelterList(currentGender, nameInput.getText().toString(), restrictions.toArray(restricts)));
                 startActivity(intent);
             }
         });

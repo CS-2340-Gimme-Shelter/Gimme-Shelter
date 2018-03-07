@@ -5,7 +5,7 @@ package com.example.hkamath.gimmeshelterapp.model;
  */
 
 public enum ShelterGender {
-    MEN("Men"), WOMEN("Women"), OTHER("Other"), UNRESTRICTED("Any");
+    UNRESTRICTED("Any"), MEN("Men"), WOMEN("Women"), OTHER("Other");
 
     private String name;
 
