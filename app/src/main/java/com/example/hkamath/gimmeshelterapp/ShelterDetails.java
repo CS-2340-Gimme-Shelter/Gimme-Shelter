@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.example.hkamath.gimmeshelterapp.model.Shelter;
+import com.example.hkamath.gimmeshelterapp.model.ShelterHandler;
 
 import java.util.Arrays;
 
@@ -30,7 +31,7 @@ public class ShelterDetails extends AppCompatActivity {
         addressFields = findViewById(R.id.shelter_address_text);
 
         int position = (Integer) getIntent().getSerializableExtra("Shelter");
-        Shelter shelter = Shelter.getShelters().get(position);
+        Shelter shelter = ShelterHandler.getShelters().get(position);
 
         nameField.setText(shelter.getShelterName());
         capacityField.setText(shelter.getCapacity() + "");

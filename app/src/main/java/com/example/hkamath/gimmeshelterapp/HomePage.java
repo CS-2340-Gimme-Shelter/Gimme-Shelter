@@ -20,6 +20,7 @@ public class HomePage extends AppCompatActivity implements ShelterFetchCallback 
 
     private Button logoutButton;
     private Button shelterListButton;
+    private Button shelterSearchButton;
     private Button mapButton;
 
     @Override
@@ -33,6 +34,7 @@ public class HomePage extends AppCompatActivity implements ShelterFetchCallback 
         logoutButton = (Button) findViewById(R.id.logout_button);
         shelterListButton = (Button) findViewById(R.id.shelter_list_button);
         mapButton = (Button) findViewById(R.id.shelter_map_button);
+        shelterSearchButton = (Button) findViewById(R.id.shelter_search_button);
 
         APIUtil.GrabSheltersTask sheltersTask = new APIUtil.GrabSheltersTask();
         sheltersTask.fetch(this);
@@ -56,6 +58,15 @@ public class HomePage extends AppCompatActivity implements ShelterFetchCallback 
                 // Switch to List View
                 Intent myIntent = new Intent(HomePage.this,
                         ShelterList.class);
+                startActivity(myIntent);
+            }
+        });
+
+        shelterSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(HomePage.this,
+                        ShelterSearch.class);
                 startActivity(myIntent);
             }
         });

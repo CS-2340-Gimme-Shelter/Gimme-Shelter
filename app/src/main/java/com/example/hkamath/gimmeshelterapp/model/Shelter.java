@@ -1,5 +1,10 @@
 package com.example.hkamath.gimmeshelterapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.google.android.gms.drive.metadata.internal.ParentDriveIdSet;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,9 +12,7 @@ import java.util.List;
  * Created by crsch on 3/5/2018.
  */
 
-public class Shelter {
-
-    private static List<Shelter> shelters = new ArrayList<Shelter>();
+public class Shelter implements Parcelable{
 
     private String address;
     private long capacity;
@@ -20,7 +23,20 @@ public class Shelter {
     private String specialNotes;
     private long uniqueKey;
     private ShelterGender gender;
-    private List<ShelterRestriction> restrictions;
+    private List<ShelterRestriction> restrictions = new ArrayList<>();
+
+    public Shelter(Parcel parcel) {
+        address = parcel.readString();
+        capacity = parcel.readLong();
+        latitude = parcel.readDouble();
+        longitude = parcel.readDouble();
+        phoneNumber = parcel.readString();
+        shelterName = parcel.readString();
+        specialNotes = parcel.readString();
+        uniqueKey = parcel.readLong();
+        gender = (ShelterGender) parcel.readSerializable();
+        parcel.readList(restrictions, null);
+    }
 
     public Shelter(String address, long capacity, double latitude, double longitude, String phoneNumber, List<ShelterRestriction> restrictions, String shelterName, String specialNotes, long uniqueKey, ShelterGender gender) {
         this();
@@ -37,11 +53,7 @@ public class Shelter {
     }
 
     public Shelter() {
-        shelters.add(this);
-    }
-
-    public static List<Shelter> getShelters() {
-        return shelters;
+        ShelterHandler.addShelter(this);
     }
 
     public String getAddress() {
@@ -128,6 +140,7 @@ public class Shelter {
     public String toString() {
         return "Shelter{" +
                 "address='" + address + '\'' +
+                "gender='" + gender + '\'' +
                 ", capacity=" + capacity +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
@@ -142,4 +155,48 @@ public class Shelter {
     public String getRestrictionsString() {
         return "Gender: " + gender.toString() + ", Other: " + restrictions.toString();
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        /*
+        private String address;
+        private long capacity;
+        private double latitude;
+        private double longitude;
+        private String phoneNumber;
+        private String shelterName;
+        private String specialNotes;
+        private long uniqueKey;
+        private ShelterGender gender;
+        private List<ShelterRestriction> restrictions;
+         */
+        parcel.writeString(address);
+        parcel.writeLong(capacity);
+        parcel.writeDouble(latitude);
+        parcel.writeDouble(longitude);
+        parcel.writeString(phoneNumber);
+        parcel.writeString(shelterName);
+        parcel.writeString(specialNotes);
+        parcel.writeLong(uniqueKey);
+        parcel.writeSerializable(gender);
+        parcel.writeList(restrictions);
+    }
+
+    public static final Parcelable.Creator<Shelter> CREATOR = new Parcelable.Creator<Shelter>() {
+
+        @Override
+        public Shelter createFromParcel(Parcel parcel) {
+            return new Shelter(parcel);
+        }
+
+        @Override
+        public Shelter[] newArray(int size) {
+            return new Shelter[size];
+        }
+    };
 }

@@ -22,7 +22,8 @@
         <activity android:name=".LoginScreen" />
         <activity android:name=".RegistrationScreen" />
         <activity android:name=".ShelterList" />
-        <activity android:name=".ShelterDetails"></activity>
+        <activity android:name=".ShelterDetails" />
+        <activity android:name=".ShelterSearch"></activity>
     </application>
 
 </manifest>

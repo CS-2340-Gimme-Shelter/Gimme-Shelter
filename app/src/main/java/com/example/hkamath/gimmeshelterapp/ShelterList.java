@@ -12,6 +12,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.hkamath.gimmeshelterapp.model.Shelter;
+import com.example.hkamath.gimmeshelterapp.model.ShelterHandler;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ShelterList extends AppCompatActivity {
 
@@ -22,8 +27,21 @@ public class ShelterList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shelter_list);
 
+        List<Shelter> shelters;
+        // Check to see if shelters was passed in the intent
+        Object[] ins = (Object[]) getIntent().getSerializableExtra("shelters");
+        // If not just use all shelters
+        if (ins == null) {
+            shelters = ShelterHandler.getShelters();
+        } else {
+            shelters = new ArrayList<Shelter>();
+            for (Object o: ins) {
+                shelters.add((Shelter) o);
+            }
+        }
+
         listView = findViewById(R.id.shelter_list);
-        listView.setAdapter(new ArrayAdapter<Shelter>(this, R.layout.shelter_list_item, Shelter.getShelters()) {
+        listView.setAdapter(new ArrayAdapter<Shelter>(this, R.layout.shelter_list_item, shelters) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 // Get the data item for this position
