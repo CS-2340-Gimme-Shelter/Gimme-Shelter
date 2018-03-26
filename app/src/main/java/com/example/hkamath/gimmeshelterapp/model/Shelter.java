@@ -15,8 +15,6 @@ import java.util.List;
 
 public class Shelter implements Parcelable{
 
-    @Exclude
-    private String id;
     private String address;
     private long capacity;
     private double latitude;
@@ -222,11 +220,4 @@ public class Shelter implements Parcelable{
         }
     };
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 }

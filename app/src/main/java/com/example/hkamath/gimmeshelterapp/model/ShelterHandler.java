@@ -24,6 +24,47 @@ public class ShelterHandler {
         return shelters;
     }
 
+    public static Object[] getOrderedMapShelterList(ShelterGender gender, String name, ShelterRestriction...restrictions) {
+
+        List<Shelter> nameList = getSheltersByNameMatch(name);
+        List<Shelter> nameInList = getSheltersByNameIn(name);
+        List<Shelter> genderNameList = getSheltersByGenderFit(gender, nameList);
+        List<Shelter> genderNameInList = getSheltersByGenderFit(gender, nameInList);
+
+        List<Shelter> restrictionEqualList = getSheltersRestrictionMatch(genderNameList, restrictions);
+        List<Shelter> restrictionOutList = getSheltersRestrictionOutFit(genderNameList, restrictions);
+        List<Shelter> restrictionEqualListInName = getSheltersRestrictionMatch(genderNameInList, restrictions);
+        List<Shelter> restrictionOutListInName = getSheltersRestrictionOutFit(genderNameInList, restrictions);
+
+        List<Shelter> finalList = new ArrayList<>();
+
+        // Add all exact matches
+        finalList.addAll(restrictionEqualList);
+
+        // Add name in and restriction match
+        for (Shelter s: restrictionEqualListInName) {
+            if (!finalList.contains(s)) {
+                finalList.add(s);
+            }
+        }
+
+        // Add name match restriction out
+        for (Shelter s: restrictionOutList) {
+            if (!finalList.contains(s)) {
+                finalList.add(s);
+            }
+        }
+
+        // Add name in restriction out
+        for (Shelter s: restrictionOutListInName) {
+            if (!finalList.contains(s)) {
+                finalList.add(s);
+            }
+        }
+
+        return finalList.toArray();
+    }
+
     public static Object[] getOrderedShelterList(ShelterGender gender, String name, ShelterRestriction...restrictions) {
 
         List<Shelter> nameList = getSheltersByNameMatch(name);
@@ -85,9 +126,9 @@ public class ShelterHandler {
         return APIUtil.giveShelterGuest(shelter, user, num);
     }
 
-    public static Shelter getShelterById(String id) {
+    public static Shelter getShelterById(long id) {
         for (Shelter s: shelters) {
-            if (s.getId().equals(id)) {
+            if (s.getUniqueKey() == id) {
                 return s;
             }
         }

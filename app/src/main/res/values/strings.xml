@@ -52,4 +52,5 @@
     <string name="prompt_bed">Reserve beds</string>
     <string name="prompt_remove_bed">Release beds</string>
     <string name="num_beds">Number beds reserved:</string>
+    <string name="search_map">Map</string>
 </resources>

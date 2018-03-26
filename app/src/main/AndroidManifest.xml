@@ -23,7 +23,16 @@
         <activity android:name=".RegistrationScreen" />
         <activity android:name=".ShelterList" />
         <activity android:name=".ShelterDetails" />
-        <activity android:name=".ShelterSearch"></activity>
+        <activity android:name=".ShelterSearch" />
+        <activity android:name=".ShelterMap" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCgujX6W1InAufHqB_4EmV2_7kvBX0zDiw" />
+
     </application>
 
 </manifest>

@@ -33,15 +33,21 @@ public class APIUtil {
         if (capacity < shelter.getVisitors().size() + num) {
             return false;
         }
-        database.getReference("Shelter").child(shelter.getId()).child("visitors")
+        database.getReference("Shelter").child(shelter.getUniqueKey() + "").child("visitors")
                 .child(user.getFirebaseUser().getUid()).setValue(num);
+        database.getReference("User").child(user.getFirebaseUser().getUid()).child("bedRequestedShelter").setValue(shelter.getUniqueKey());
+        user.setBedRequestedShelter(shelter.getUniqueKey() + "");
+        shelter.getVisitors().put(user.getFirebaseUser().getUid(), num);
 
         return true;
     }
 
     public static void removeShelterGuest(Shelter shelter, User user) {
-        database.getReference("Shelter").child(shelter.getId()).child("visitors")
+        database.getReference("Shelter").child(shelter.getUniqueKey() + "").child("visitors")
                 .child(user.getFirebaseUser().getUid()).setValue(0);
+        database.getReference("User").child(user.getFirebaseUser().getUid()).child("bedRequestedShelter").setValue(null);
+        user.setBedRequestedShelter(null);
+        shelter.getVisitors().put(user.getFirebaseUser().getUid(), 0);
     }
 
     public static class GrabSheltersTask {
@@ -55,7 +61,6 @@ public class APIUtil {
                     List<Shelter> shelters = new ArrayList<Shelter>();
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                         Shelter shelter = snapshot.getValue(Shelter.class);
-                        shelter.setId(snapshot.getKey());
                         ShelterHandler.addShelter(shelter);
                         shelters.add(shelter);
                         Log.d("Shelter", shelter.toString());
@@ -203,7 +208,6 @@ public class APIUtil {
                 Log.d("Shelter", "Shelters updating");
                 for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                     Shelter shelter = snapshot.getValue(Shelter.class);
-                    shelter.setId(snapshot.getKey());
                     ShelterHandler.addShelter(shelter);
                     shelters.add(shelter);
                     Log.d("Shelter", shelter.toString());

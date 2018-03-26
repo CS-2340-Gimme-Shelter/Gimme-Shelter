@@ -31,6 +31,8 @@ public class ShelterSearch extends AppCompatActivity {
     private Button restrictionButton;
     private LinearLayout restrictionList;
     private TextView genderView;
+
+    private Button mapSearch;
     private Button search;
 
     private TextView nameInput;
@@ -50,6 +52,8 @@ public class ShelterSearch extends AppCompatActivity {
         restrictionSpinner = findViewById(R.id.search_restriction_spinner);
         restrictionButton = findViewById(R.id.search_add_restriction_button);
         restrictionList = findViewById(R.id.search_specs_list);
+
+        mapSearch = findViewById(R.id.search_map_search);
         search = findViewById(R.id.search_run_search);
 
         // Setup gender spinner
@@ -107,6 +111,19 @@ public class ShelterSearch extends AppCompatActivity {
                     newView.setText(currentRestriction.toString());
                     restrictionList.addView(newView);
                 }
+            }
+        });
+
+        // On map search clicked
+        mapSearch.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ShelterSearch.this, ShelterMap.class);
+                ShelterRestriction[] restricts = new ShelterRestriction[0];
+                intent.putExtra("shelters",
+                        ShelterHandler.getOrderedMapShelterList(currentGender, nameInput.getText().toString(), restrictions.toArray(restricts)));
+                startActivity(intent);
             }
         });
 

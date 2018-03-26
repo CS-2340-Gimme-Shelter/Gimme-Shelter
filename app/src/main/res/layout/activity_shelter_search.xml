@@ -89,12 +89,25 @@
             android:id="@+id/search_specs_list" />
     </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/search_run_search"
-        android:text="@string/search_search"
         app:layout_constraintTop_toBottomOf="@id/search_specs_linear"
-        android:layout_marginTop="32dp"/>
+        android:layout_marginTop="32dp">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_map_search"
+            android:text="@string/search_map"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/search_run_search"
+            android:text="@string/search_search"
+            />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

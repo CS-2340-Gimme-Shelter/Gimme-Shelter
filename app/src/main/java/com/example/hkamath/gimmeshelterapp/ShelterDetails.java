@@ -66,14 +66,15 @@ public class ShelterDetails extends AppCompatActivity {
         // Setup bedNumberPicker
 
         User user = User.getCurrentUser();
-        if (shelter.getVisitors().containsKey(user.getFirebaseUser().getUid()) && shelter.getVisitors().get(user.getFirebaseUser().getUid()) != 0) {
-            setupRemover(shelter.getId());
+        if (shelter.getVisitors().containsKey(user.getFirebaseUser().getUid()) && shelter.getVisitors().get(user.getFirebaseUser().getUid()) != 0
+                ) {
+            setupRemover(shelter.getUniqueKey());
         } else {
-            setupPicker(shelter.getId());
+            setupPicker(shelter.getUniqueKey());
         }
     }
 
-    private void setupRemover(String shelterId) {
+    private void setupRemover(long shelterId) {
         pickerLayout.setVisibility(View.GONE);
         removerLayout.setVisibility(View.VISIBLE);
         User user = User.getCurrentUser();
@@ -88,33 +89,36 @@ public class ShelterDetails extends AppCompatActivity {
                 Log.d("Shelter", "Remove");
                 Shelter shelter = ShelterHandler.getShelterById(shelterId);
                 APIUtil.removeShelterGuest(shelter, user);
-                shelter.getVisitors().put(user.getFirebaseUser().getUid(), 0);
-
                 setupPicker(shelterId);
             }
         });
     }
 
-    public void setupPicker(String shelterId) {
+    public void setupPicker(long shelterId) {
         removerLayout.setVisibility(View.GONE);
         pickerLayout.setVisibility(View.VISIBLE);
         Shelter shelter = ShelterHandler.getShelterById(shelterId);
 
-        int max = (int) shelter.getCapacity() - shelter.getVisitors().size();
+        int max = (int) shelter.getCapacity() - shelter.getVisitors().values().stream().mapToInt(Number::intValue).sum();
         bedNumberPicker.setMaxValue(max);
         bedNumberPicker.setMinValue(max > 1 ? 1 : max);
         reserveBedsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 User user = User.getCurrentUser();
+
+                if (user.getBedRequestedShelter() != null) {
+                    Toast.makeText(ShelterDetails.this, "You already have beds selected at another shelter.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 Shelter shelter = ShelterHandler.getShelterById(shelterId);
                 shelter.getVisitors().put(user.getFirebaseUser().getUid(), bedNumberPicker.getValue());
                 boolean success = APIUtil.giveShelterGuest(shelter, user, bedNumberPicker.getValue());
                 if (!success) {
-                    Toast.makeText(ShelterDetails.this, "That many beds are not available", Toast.LENGTH_SHORT);
+                    Toast.makeText(ShelterDetails.this, "That many beds are not available", Toast.LENGTH_SHORT).show();
                 } else {
                     setupRemover(shelterId);
-                    user.setBedRequestedShelter(shelter.getId());
                 }
             }
         });
