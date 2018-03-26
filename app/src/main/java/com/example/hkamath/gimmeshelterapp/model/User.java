@@ -23,6 +23,8 @@ public class User {
     private Gender gender;
     private Date birthDate;
     private boolean admin;
+    private String bedRequestedShelter;
+
     private FirebaseUser fuser;
 
     public User() {
@@ -42,6 +44,10 @@ public class User {
 
     public FirebaseUser getFirebaseUser() {
         return fuser;
+    }
+
+    public void setFuser(FirebaseUser fuser) {
+        this.fuser = fuser;
     }
 
     public boolean isAdmin() {
@@ -82,6 +88,14 @@ public class User {
 
     public static User getCurrentUser() {
         return currentUser;
+    }
+
+    public String getBedRequestedShelter() {
+        return bedRequestedShelter;
+    }
+
+    public void setBedRequestedShelter(String bedRequestedShelter) {
+        this.bedRequestedShelter = bedRequestedShelter;
     }
 
     public static boolean isEmailValid(String email) {

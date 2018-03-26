@@ -49,4 +49,7 @@
     <string name="search_search">Search</string>
     <string name="removing_restrictions">Removing restrictions</string>
     <string name="prompt_shelter_name">Shelter Name</string>
+    <string name="prompt_bed">Reserve beds</string>
+    <string name="prompt_remove_bed">Release beds</string>
+    <string name="num_beds">Number beds reserved:</string>
 </resources>

@@ -3,9 +3,10 @@ package com.example.hkamath.gimmeshelterapp.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.android.gms.drive.metadata.internal.ParentDriveIdSet;
+import com.google.firebase.database.Exclude;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,6 +15,8 @@ import java.util.List;
 
 public class Shelter implements Parcelable{
 
+    @Exclude
+    private String id;
     private String address;
     private long capacity;
     private double latitude;
@@ -24,6 +27,8 @@ public class Shelter implements Parcelable{
     private long uniqueKey;
     private ShelterGender gender;
     private List<ShelterRestriction> restrictions = new ArrayList<>();
+    private HashMap<String, Integer> visitors = new HashMap<String, Integer>();
+    private HashMap<String, Integer> employees = new HashMap<String, Integer>();
 
     public Shelter(Parcel parcel) {
         address = parcel.readString();
@@ -53,7 +58,6 @@ public class Shelter implements Parcelable{
     }
 
     public Shelter() {
-        ShelterHandler.addShelter(this);
     }
 
     public String getAddress() {
@@ -136,6 +140,22 @@ public class Shelter implements Parcelable{
         this.gender = gender;
     }
 
+    public HashMap<String, Integer> getVisitors() {
+        return visitors;
+    }
+
+    public void setVisitors(HashMap<String, Integer> visitors) {
+        this.visitors = visitors;
+    }
+
+    public HashMap<String, Integer> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(HashMap<String, Integer> employees) {
+        this.employees = employees;
+    }
+
     @Override
     public String toString() {
         return "Shelter{" +
@@ -149,6 +169,8 @@ public class Shelter implements Parcelable{
                 ", shelterName='" + shelterName + '\'' +
                 ", specialNotes='" + specialNotes + '\'' +
                 ", uniqueKey=" + uniqueKey +
+                ", visitors=" + visitors +
+                ", employees" + employees +
                 '}';
     }
 
@@ -199,4 +221,12 @@ public class Shelter implements Parcelable{
             return new Shelter[size];
         }
     };
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

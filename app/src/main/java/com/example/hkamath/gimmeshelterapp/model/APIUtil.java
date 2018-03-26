@@ -2,7 +2,6 @@ package com.example.hkamath.gimmeshelterapp.model;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.hkamath.gimmeshelterapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,21 +28,41 @@ public class APIUtil {
     private static FirebaseAuth auth = FirebaseAuth.getInstance();
     private static FirebaseDatabase database = FirebaseDatabase.getInstance();
 
+    public static boolean giveShelterGuest(Shelter shelter, User user, int num) {
+        long capacity = shelter.getCapacity();
+        if (capacity < shelter.getVisitors().size() + num) {
+            return false;
+        }
+        database.getReference("Shelter").child(shelter.getId()).child("visitors")
+                .child(user.getFirebaseUser().getUid()).setValue(num);
+
+        return true;
+    }
+
+    public static void removeShelterGuest(Shelter shelter, User user) {
+        database.getReference("Shelter").child(shelter.getId()).child("visitors")
+                .child(user.getFirebaseUser().getUid()).setValue(0);
+    }
+
     public static class GrabSheltersTask {
         public static void fetch(final ShelterFetchCallback callback) {
             DatabaseReference myRef = database.getReference("Shelter");
             Log.d("Shelters", "Fetching shelters");
 
-            myRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     List<Shelter> shelters = new ArrayList<Shelter>();
                     for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                         Shelter shelter = snapshot.getValue(Shelter.class);
+                        shelter.setId(snapshot.getKey());
+                        ShelterHandler.addShelter(shelter);
                         shelters.add(shelter);
+                        Log.d("Shelter", shelter.toString());
                     }
 
                     callback.sheltersFetched(shelters);
+                    watchShelters();
                 }
 
                 @Override
@@ -135,17 +154,21 @@ public class APIUtil {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser fuser = task.getResult().getUser();
-                                User user = new HomelessUser(null, null, null, null, null, null, fuser);
-
                                 DatabaseReference myRef = database.getReference("User").child(fuser.getUid());
                                 myRef.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         // This method is called once with the initial value and again
                                         // whenever data at this location is updated.
+
                                         User user = dataSnapshot.getValue(User.class);
+                                        user.setFuser(fuser);
                                         User.loginAs(user);
-                                        callback.onPostExecute(true, null);
+                                        // Make sure we continue to update User but don't
+                                        if (callback != null) {
+                                            callback.onPostExecute(true, null);
+                                        }
+                                        callback = null;
                                         Log.d("Auth", user.toString());
                                     }
 
@@ -153,7 +176,10 @@ public class APIUtil {
                                     public void onCancelled(DatabaseError error) {
                                         // Failed to read value
                                         auth.signOut();
-                                        callback.onPostExecute(false, error.getMessage());
+                                        if (callback != null) {
+                                            callback.onPostExecute(false, error.getMessage());
+                                        }
+                                        callback = null;
                                     }
                                 });
 
@@ -166,5 +192,28 @@ public class APIUtil {
                     });
         }
 
+    }
+
+    public static void watchShelters() {
+        database.getReference("Shelter").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Shelter> shelters = new ArrayList<Shelter>();
+                ShelterHandler.clearShelters();
+                Log.d("Shelter", "Shelters updating");
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                    Shelter shelter = snapshot.getValue(Shelter.class);
+                    shelter.setId(snapshot.getKey());
+                    ShelterHandler.addShelter(shelter);
+                    shelters.add(shelter);
+                    Log.d("Shelter", shelter.toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("Shelter", "Error: " + databaseError);
+            }
+        });
     }
 }

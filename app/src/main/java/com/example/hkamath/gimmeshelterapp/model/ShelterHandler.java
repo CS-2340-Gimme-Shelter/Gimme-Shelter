@@ -81,6 +81,19 @@ public class ShelterHandler {
         return finalList.toArray();
     }
 
+    public boolean addVisitors(Shelter shelter, User user, int num) {
+        return APIUtil.giveShelterGuest(shelter, user, num);
+    }
+
+    public static Shelter getShelterById(String id) {
+        for (Shelter s: shelters) {
+            if (s.getId().equals(id)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
     public static List<Shelter> getSheltersByNameMatch(String name) {
         return getSheltersByNameMatch(name, null);
     }
@@ -169,5 +182,9 @@ public class ShelterHandler {
         }
 
         return ret;
+    }
+
+    public static void clearShelters() {
+        shelters.clear();
     }
 }
