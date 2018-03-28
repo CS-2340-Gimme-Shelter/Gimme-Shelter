@@ -107,7 +107,7 @@ public class ShelterDetails extends AppCompatActivity {
             public void onClick(View view) {
                 User user = User.getCurrentUser();
 
-                if (user.getBedRequestedShelter() != null) {
+                if (user.getBedRequestedShelter() >= 0) {
                     Toast.makeText(ShelterDetails.this, "You already have beds selected at another shelter.", Toast.LENGTH_LONG).show();
                     return;
                 }

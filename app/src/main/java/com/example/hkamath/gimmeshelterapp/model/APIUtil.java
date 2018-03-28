@@ -30,13 +30,14 @@ public class APIUtil {
 
     public static boolean giveShelterGuest(Shelter shelter, User user, int num) {
         long capacity = shelter.getCapacity();
-        if (capacity < shelter.getVisitors().size() + num) {
+        int numReserved = (int) shelter.getVisitors().values().stream().mapToInt(Number::intValue).sum();
+        if (capacity < numReserved + num) {
             return false;
         }
         database.getReference("Shelter").child(shelter.getUniqueKey() + "").child("visitors")
                 .child(user.getFirebaseUser().getUid()).setValue(num);
         database.getReference("User").child(user.getFirebaseUser().getUid()).child("bedRequestedShelter").setValue(shelter.getUniqueKey());
-        user.setBedRequestedShelter(shelter.getUniqueKey() + "");
+        user.setBedRequestedShelter(shelter.getUniqueKey());
         shelter.getVisitors().put(user.getFirebaseUser().getUid(), num);
 
         return true;
@@ -46,7 +47,7 @@ public class APIUtil {
         database.getReference("Shelter").child(shelter.getUniqueKey() + "").child("visitors")
                 .child(user.getFirebaseUser().getUid()).setValue(0);
         database.getReference("User").child(user.getFirebaseUser().getUid()).child("bedRequestedShelter").setValue(null);
-        user.setBedRequestedShelter(null);
+        user.setBedRequestedShelter(-1);
         shelter.getVisitors().put(user.getFirebaseUser().getUid(), 0);
     }
 

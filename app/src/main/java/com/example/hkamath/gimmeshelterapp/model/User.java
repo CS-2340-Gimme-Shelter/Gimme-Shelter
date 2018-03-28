@@ -23,7 +23,7 @@ public class User {
     private Gender gender;
     private Date birthDate;
     private boolean admin;
-    private String bedRequestedShelter;
+    private long bedRequestedShelter = -1;
 
     private FirebaseUser fuser;
 
@@ -90,11 +90,11 @@ public class User {
         return currentUser;
     }
 
-    public String getBedRequestedShelter() {
+    public long getBedRequestedShelter() {
         return bedRequestedShelter;
     }
 
-    public void setBedRequestedShelter(String bedRequestedShelter) {
+    public void setBedRequestedShelter(long bedRequestedShelter) {
         this.bedRequestedShelter = bedRequestedShelter;
     }
 
