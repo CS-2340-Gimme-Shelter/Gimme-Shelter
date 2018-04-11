@@ -19,4 +19,16 @@ public enum Gender {
     public String toString() {
         return getName();
     }
+
+    public boolean equals(Gender other) {
+        if (other == null) {
+            return false;
+        }
+
+        if (this == other) {
+            return true;
+        }
+
+        return this.name.equals(other.name);
+    }
 }

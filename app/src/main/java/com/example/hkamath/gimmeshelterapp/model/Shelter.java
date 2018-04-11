@@ -3,8 +3,6 @@ package com.example.hkamath.gimmeshelterapp.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.firebase.database.Exclude;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -136,6 +134,21 @@ public class Shelter implements Parcelable{
 
     public void setGender(ShelterGender gender) {
         this.gender = gender;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Shelter shelter = (Shelter) o;
+
+        return uniqueKey == shelter.uniqueKey;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (uniqueKey ^ (uniqueKey >>> 32));
     }
 
     public HashMap<String, Integer> getVisitors() {
