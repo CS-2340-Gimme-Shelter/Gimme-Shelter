@@ -7,4 +7,5 @@ package com.example.hkamath.gimmeshelterapp.model;
 public interface UserLoginCallback {
     void onPostExecute(final Boolean success, String error);
     void onPostExecute(final Boolean success, int error);
+
 }

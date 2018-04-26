@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Build;
@@ -16,16 +17,18 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.hkamath.gimmeshelterapp.model.APIUtil;
+import com.example.hkamath.gimmeshelterapp.model.ResetPasswordCallback;
 import com.example.hkamath.gimmeshelterapp.model.User;
 import com.example.hkamath.gimmeshelterapp.model.UserLoginCallback;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginScreen extends AppCompatActivity implements UserLoginCallback {
+public class LoginScreen extends AppCompatActivity implements UserLoginCallback, ResetPasswordCallback {
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -40,6 +43,7 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private LinearLayout loginLayout;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -49,6 +53,8 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
         setContentView(R.layout.activity_login_screen);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+
+        loginLayout = (LinearLayout) findViewById(R.id.loginLayout);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -77,10 +83,56 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
             }
         });
 
+        Button mForgotPass = (Button) findViewById(R.id.forgot_password);
+        mForgotPass.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+                forgotPassword();
+            }
+        });
+
+
+
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
 
+
+    private void forgotPassword() {
+        // Reset errors.
+        mEmailView.setError(null);
+        mPasswordView.setError(null);
+
+        // Store values at the time of the login attempt.
+        String email = mEmailView.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+
+
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.error_field_required));
+            focusView = mEmailView;
+            cancel = true;
+        } else if (!User.isEmailValid(email)) {
+            mEmailView.setError(getString(R.string.error_invalid_email));
+            focusView = mEmailView;
+            cancel = true;
+        }
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            showProgress(true);
+            APIUtil.ResetPasswordTask mTask = new APIUtil.ResetPasswordTask(email, this);
+            mTask.resetPassword();
+        }
+    }
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -108,6 +160,12 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
             focusView = mPasswordView;
             cancel = true;
         }
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        }
+
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
@@ -192,5 +250,17 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback 
         onPostExecute(success, getString(id));
     }
 
+    @Override
+    public void onResetPassword(Boolean success, int error) {
+        onResetPassword(success, getString(error));
+    }
+
+    @Override
+    public void onResetPassword(Boolean success, String error) {
+        if (success) {
+            showProgress(false);
+            Snackbar.make(loginLayout, error, Snackbar.LENGTH_LONG).show();
+        }
+    }
 }
 

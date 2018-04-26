@@ -17,6 +17,8 @@
     </string>
     <string name="title_activity_registration_screen">RegistrationScreen</string>
     <string name="cancel_button">Cancel</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="password_reset_email_sent">Password reset email sent</string>
     <string name="login_button">Login</string>
     <string name="register_button">Register</string>
     <string name="gender_label">Gender</string>

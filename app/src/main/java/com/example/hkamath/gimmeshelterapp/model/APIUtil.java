@@ -135,6 +135,34 @@ public class APIUtil {
     }
 
     /**
+     *  Represents an asynchronous task to reset the user's password
+     */
+    public static class ResetPasswordTask {
+        private String mEmail;
+        private ResetPasswordCallback mCallback;
+
+        public ResetPasswordTask(String email, ResetPasswordCallback callback) {
+            mEmail = email;
+            mCallback = callback;
+        }
+
+
+        public void resetPassword() {
+            auth.sendPasswordResetEmail(mEmail)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d("APIUtil", "password reset email sent");
+                                mCallback.onResetPassword(true, R.string.password_reset_email_sent);
+                            }
+                        }
+                    });
+        }
+
+    }
+
+    /**
      * Represents an asynchronous login task used to authenticate
      * the user.
      */
