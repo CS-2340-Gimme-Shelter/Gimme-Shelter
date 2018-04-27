@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.hkamath.gimmeshelterapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -115,7 +116,7 @@ public class APIUtil {
                         Log.d("Auth", (task.getResult().getUser() == null) + "");
                         FirebaseUser fuser = task.getResult().getUser();
                         DatabaseReference myRef = database.getReference("User").child(fuser.getUid());
-                        DatabaseReference myRef2 = database.getReference("BannedUsers").child(email.replace(".", ""));
+                        DatabaseReference myRef2 = database.getReference("BannedUsers").child(email.replace(".", "")).child("banned");
 
                         User regUser;
                         if (admin) {
@@ -208,7 +209,10 @@ public class APIUtil {
 
         public void banUser(boolean disable) {
             DatabaseReference myDB = database.getReference("BannedUsers").child(mEmail);
-            myDB.setValue(disable);
+            myDB.child("banned").setValue(disable);
+            if (!disable) {
+                myDB.child("incorrect").setValue(0);
+            }
         }
     }
 
@@ -231,7 +235,7 @@ public class APIUtil {
         @Override
         public void signIn() {
 
-            DatabaseReference myDB = database.getReference("BannedUsers").child(mEmail.replace(".", ""));
+            DatabaseReference myDB = database.getReference("BannedUsers").child(mEmail.replace(".", "")).child("banned");
 
             ValueEventListener listener = new ValueEventListener() {
                 @Override
@@ -244,6 +248,7 @@ public class APIUtil {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
+                                            database.getReference("BannedUsers").child(mEmail.replace(".", "")).child("incorrect").setValue(0);
                                             // Sign in success, update UI with the signed-in user's information
                                             FirebaseUser fuser = task.getResult().getUser();
                                             DatabaseReference myRef = database.getReference("User").child(fuser.getUid());
@@ -277,6 +282,30 @@ public class APIUtil {
 
                                         } else {
                                             // If sign in fails, display a message to the user.
+                                            DatabaseReference db = database.getReference("BannedUsers").child(mEmail.replace(".", "")).child("incorrect");
+                                            db.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    if (dataSnapshot.getValue() == null) {
+                                                        database.getReference("BannedUsers").child(mEmail.replace(".", "")).child("incorrect").setValue(1).addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Log.e("dbError", e.getMessage());
+                                                            }
+                                                        });
+                                                    } else if ((long) dataSnapshot.getValue() == 3) {
+                                                        database.getReference("BannedUsers").child(mEmail.replace(".", "")).child("banned").setValue(true);
+                                                    } else {
+
+                                                        database.getReference("BannedUsers").child(mEmail.replace(".", "")).child("incorrect").setValue((long) dataSnapshot.getValue() + 1);
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+                                                    Log.e("dbError", databaseError.getMessage());
+                                                }
+                                            });
                                             callback.onPostExecute(false, R.string.error_email_password_not_found);
                                         }
 
