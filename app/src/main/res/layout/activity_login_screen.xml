@@ -74,6 +74,14 @@
                 android:textStyle="bold" />
 
             <Button
+                android:id="@+id/guest_login"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Guest Login"
+                android:textStyle="bold" />
+
+            <Button
                 android:id="@+id/forgot_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

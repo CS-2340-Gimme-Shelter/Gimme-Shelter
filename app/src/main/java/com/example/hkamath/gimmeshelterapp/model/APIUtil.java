@@ -162,23 +162,58 @@ public class APIUtil {
 
     }
 
+    abstract public static class LoginTask {
+        protected UserLoginCallback callback;
+
+        public LoginTask(UserLoginCallback callback) {
+         this.callback = callback;
+        }
+
+        abstract public void signIn();
+    }
+
+    public static class AnonLoginTask extends LoginTask{
+
+        public AnonLoginTask(UserLoginCallback callback) {
+            super(callback);
+        }
+
+        @Override
+        public void signIn() {
+            auth.signInAnonymously()
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser fuser = task.getResult().getUser();
+                                User user = new Guest(fuser);
+                                User.loginAs(user);
+                                callback.onPostExecute(true, null);
+                            } else {
+                                callback.onPostExecute(false, "Guest Login Failed");
+                            }
+                        }
+                    });
+        }
+    }
+
     /**
      * Represents an asynchronous login task used to authenticate
      * the user.
      */
-    public static class UserLoginTask {
+    public static class UserLoginTask extends LoginTask{
 
         private final String mEmail;
         private final String mPassword;
 
-        private UserLoginCallback callback;
-
         public UserLoginTask(String email, String password, UserLoginCallback callback) {
+            super(callback);
             this.mEmail = email;
             mPassword = password;
-            this.callback = callback;
+
         }
 
+        @Override
         public void signIn() {
 
             auth.signInWithEmailAndPassword(mEmail, mPassword)

@@ -38,7 +38,7 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback,
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private APIUtil.UserLoginTask mAuthTask = null;
+    private APIUtil.LoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -90,6 +90,13 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback,
             }
         });
 
+        Button mGuestLogin = (Button) findViewById(R.id.guest_login);
+        mGuestLogin.setOnClickListener(new OnClickListener() {
+            public void onClick(View view) {
+                anonLogin();
+            }
+        });
+
 
 
         mLoginFormView = findViewById(R.id.login_form);
@@ -132,6 +139,16 @@ public class LoginScreen extends AppCompatActivity implements UserLoginCallback,
             APIUtil.ResetPasswordTask mTask = new APIUtil.ResetPasswordTask(email, this);
             mTask.resetPassword();
         }
+    }
+
+    private void anonLogin() {
+        if (mAuthTask != null) {
+            return;
+        }
+
+        mAuthTask = new APIUtil.AnonLoginTask(this);
+        mAuthTask.signIn();
+
     }
     /**
      * Attempts to sign in or register the account specified by the login form.
