@@ -22,6 +22,7 @@ public class HomePage extends AppCompatActivity implements ShelterFetchCallback 
     private Button shelterListButton;
     private Button shelterSearchButton;
     private Button mapButton;
+    private Button banButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +36,22 @@ public class HomePage extends AppCompatActivity implements ShelterFetchCallback 
         shelterListButton = (Button) findViewById(R.id.shelter_list_button);
         mapButton = (Button) findViewById(R.id.shelter_map_button);
         shelterSearchButton = (Button) findViewById(R.id.shelter_search_button);
+        banButton = (Button) findViewById(R.id.ban_button);
 
         APIUtil.GrabSheltersTask sheltersTask = new APIUtil.GrabSheltersTask();
         sheltersTask.fetch(this);
+
+        if (User.getCurrentUser().isAdmin()) {
+            banButton.setVisibility(View.VISIBLE);
+        }
+
+        banButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(HomePage.this, BanPage.class);
+                startActivity(myIntent);
+            }
+        });
 
         // Capture button clicks
         logoutButton.setOnClickListener(new View.OnClickListener() {

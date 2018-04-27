@@ -33,6 +33,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCgujX6W1InAufHqB_4EmV2_7kvBX0zDiw" />
 
+        <activity android:name=".BanPage"></activity>
     </application>
 
 </manifest>

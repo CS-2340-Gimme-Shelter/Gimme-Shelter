@@ -115,6 +115,7 @@ public class APIUtil {
                         Log.d("Auth", (task.getResult().getUser() == null) + "");
                         FirebaseUser fuser = task.getResult().getUser();
                         DatabaseReference myRef = database.getReference("User").child(fuser.getUid());
+                        DatabaseReference myRef2 = database.getReference("BannedUsers").child(email.replace(".", ""));
 
                         User regUser;
                         if (admin) {
@@ -123,6 +124,7 @@ public class APIUtil {
                             regUser = new HomelessUser(firstName, lastName, email, password, gender, birthDate, fuser);
                         }
                         myRef.setValue(regUser);
+                        myRef2.setValue(false);
                         User.loginAs(regUser);
                         callback.onPostExecute(true, null);
                     } else {
@@ -197,6 +199,19 @@ public class APIUtil {
         }
     }
 
+    public static class BanUserTask {
+        private String mEmail;
+
+        public BanUserTask(String email) {
+            mEmail = email.replace(".", "");
+        }
+
+        public void banUser(boolean disable) {
+            DatabaseReference myDB = database.getReference("BannedUsers").child(mEmail);
+            myDB.setValue(disable);
+        }
+    }
+
     /**
      * Represents an asynchronous login task used to authenticate
      * the user.
@@ -216,49 +231,69 @@ public class APIUtil {
         @Override
         public void signIn() {
 
-            auth.signInWithEmailAndPassword(mEmail, mPassword)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                FirebaseUser fuser = task.getResult().getUser();
-                                DatabaseReference myRef = database.getReference("User").child(fuser.getUid());
-                                myRef.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        // This method is called once with the initial value and again
-                                        // whenever data at this location is updated.
+            DatabaseReference myDB = database.getReference("BannedUsers").child(mEmail.replace(".", ""));
 
-                                        User user = dataSnapshot.getValue(User.class);
-                                        user.setFuser(fuser);
-                                        User.loginAs(user);
-                                        // Make sure we continue to update User but don't
-                                        if (callback != null) {
-                                            callback.onPostExecute(true, null);
-                                        }
-                                        callback = null;
-                                        Log.d("Auth", user.toString());
-                                    }
-
+            ValueEventListener listener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null && (boolean) dataSnapshot.getValue()) {
+                        callback.onPostExecute(false, "User is banned");
+                    } else {
+                        auth.signInWithEmailAndPassword(mEmail, mPassword)
+                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                     @Override
-                                    public void onCancelled(DatabaseError error) {
-                                        // Failed to read value
-                                        auth.signOut();
-                                        if (callback != null) {
-                                            callback.onPostExecute(false, error.getMessage());
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                            // Sign in success, update UI with the signed-in user's information
+                                            FirebaseUser fuser = task.getResult().getUser();
+                                            DatabaseReference myRef = database.getReference("User").child(fuser.getUid());
+                                            myRef.addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    // This method is called once with the initial value and again
+                                                    // whenever data at this location is updated.
+
+                                                    User user = dataSnapshot.getValue(User.class);
+                                                    user.setFuser(fuser);
+                                                    User.loginAs(user);
+                                                    // Make sure we continue to update User but don't
+                                                    if (callback != null) {
+                                                        callback.onPostExecute(true, null);
+                                                    }
+                                                    callback = null;
+                                                    Log.d("Auth", user.toString());
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError error) {
+                                                    // Failed to read value
+                                                    auth.signOut();
+                                                    if (callback != null) {
+                                                        callback.onPostExecute(false, error.getMessage());
+                                                    }
+                                                    callback = null;
+                                                }
+                                            });
+
+                                        } else {
+                                            // If sign in fails, display a message to the user.
+                                            callback.onPostExecute(false, R.string.error_email_password_not_found);
                                         }
-                                        callback = null;
+
                                     }
                                 });
+                    }
+                }
 
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                callback.onPostExecute(false, R.string.error_email_password_not_found);
-                            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("ban error", databaseError.getMessage());
+                    callback.onPostExecute(false, "Error parsing ban status");
+                }
+            };
+            myDB.addListenerForSingleValueEvent(listener);
 
-                        }
-                    });
+
         }
 
     }
