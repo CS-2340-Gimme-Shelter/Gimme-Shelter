@@ -9,6 +9,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class Guest extends User {
     public Guest(FirebaseUser fuser) {
-        super("guest", "guest", "guest", null, null, null, false, fuser);
+        super("guest", "guest", "guest", null, Gender.MALE, null, false, fuser);
     }
 }
